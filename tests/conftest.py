@@ -36,7 +36,7 @@ def app():
 def client(test_app):
     '''A test client for the app.'''
 
-    return app.test_client()
+    return test_app.test_client()
 
 
 @pytest.fixture

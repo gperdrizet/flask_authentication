@@ -44,3 +44,30 @@ def runner(test_app):
     '''A test runner for the apps Click commands.'''
 
     return test_app.test_cli_runner()
+
+
+class AuthActions(object):
+    '''Helper class for authentication actions in tests.'''
+
+    def __init__(self, test_client):
+        self._client = test_client
+
+    def login(self, username='test', password='test'):
+        '''Login action.'''
+
+        return self._client.post(
+            '/auth/login',
+            data={'username': username, 'password': password}
+        )
+
+    def logout(self):
+        '''Logout action.'''
+
+        return self._client.get('/auth/logout')
+
+
+@pytest.fixture
+def auth(test_client):
+    '''Authentication actions fixture.'''
+
+    return AuthActions(test_client)

@@ -7,6 +7,12 @@ import click
 from flask import current_app, g
 
 
+# Set up timestamp converter for SQLite
+sqlite3.register_converter(
+    "timestamp", lambda v: datetime.fromisoformat(v.decode())
+)
+
+
 def get_db():
     '''Create database connection object'''
 
@@ -30,6 +36,7 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
+
 def init_db():
     '''Initialize the database with schema.sql'''
 
@@ -47,6 +54,7 @@ def init_db_command():
     click.echo('Initialized the database.')
 
 
-sqlite3.register_converter(
-    "timestamp", lambda v: datetime.fromisoformat(v.decode())
-)
+def init_app(app):
+    '''Register database functions with the Flask app.'''
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)

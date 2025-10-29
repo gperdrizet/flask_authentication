@@ -12,28 +12,28 @@ with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
 
 
 @pytest.fixture
-def app():
+def test_app():
     '''Create and configure a new app instance for each test.'''
 
     db_fd, db_path = tempfile.mkstemp()
 
-    test_app = create_app({
+    app_instance = create_app({
         'TESTING': True,
         'DATABASE': db_path,
     })
 
-    with test_app.app_context():
+    with app_instance.app_context():
         init_db()
         get_db().executescript(_data_sql)
 
-    yield test_app
+    yield app_instance
 
     os.close(db_fd)
     os.unlink(db_path)
 
 
 @pytest.fixture
-def client(test_app):
+def test_client(test_app):
     '''A test client for the app.'''
 
     return test_app.test_client()
@@ -49,8 +49,8 @@ def runner(test_app):
 class AuthActions(object):
     '''Helper class for authentication actions in tests.'''
 
-    def __init__(self, test_client):
-        self._client = test_client
+    def __init__(self, client_instance):
+        self._client = client_instance
 
     def login(self, username='test', password='test'):
         '''Login action.'''

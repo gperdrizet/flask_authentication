@@ -4,16 +4,16 @@ import pytest
 from app.db import get_db
 
 
-def test_index(client, auth):
+def test_index(test_client, auth):
     '''Test the index page.'''
 
-    response = client.get('/')
+    response = test_client.get('/')
 
     assert b"Log In" in response.data
     assert b"Register" in response.data
 
     auth.login()
-    response = client.get('/')
+    response = test_client.get('/')
 
     assert b'Log Out' in response.data
     assert b'test title' in response.data
@@ -27,18 +27,18 @@ def test_index(client, auth):
     '/1/update',
     '/1/delete',
 ))
-def test_login_required(client, path):
+def test_login_required(test_client, path):
     '''Test that login is required for certain views.'''
 
-    response = client.post(path)
+    response = test_client.post(path)
     assert response.headers['Location'] == '/auth/login'
 
 
-def test_author_required(app, client, auth):
+def test_author_required(test_app, test_client, auth):
     '''Test that only the author can modify a post.'''
 
     # change the post author to another user
-    with app.app_context():
+    with test_app.app_context():
         db = get_db()
         db.execute('UPDATE post SET author_id = 2 WHERE id = 1')
         db.commit()
@@ -46,49 +46,49 @@ def test_author_required(app, client, auth):
     auth.login()
 
     # Current user can't modify other user's post
-    assert client.post('/1/update').status_code == 403
-    assert client.post('/1/delete').status_code == 403
+    assert test_client.post('/1/update').status_code == 403
+    assert test_client.post('/1/delete').status_code == 403
 
     # Current user doesn't see edit link
-    assert b'href="/1/update"' not in client.get('/').data
+    assert b'href="/1/update"' not in test_client.get('/').data
 
 
 @pytest.mark.parametrize('path', (
     '/2/update',
     '/2/delete',
 ))
-def test_exists_required(client, auth, path):
+def test_exists_required(test_client, auth, path):
     '''Test that a 404 is returned if the post does not exist.'''
 
     auth.login()
-    assert client.post(path).status_code == 404
+    assert test_client.post(path).status_code == 404
 
 
-def test_create(client, auth, app):
+def test_create(test_client, auth, test_app):
     '''Test creating a blog post.'''
 
     auth.login()
 
-    assert client.get('/create').status_code == 200
+    assert test_client.get('/create').status_code == 200
 
-    client.post('/create', data={'title': 'created', 'body': ''})
+    test_client.post('/create', data={'title': 'created', 'body': ''})
 
-    with app.app_context():
+    with test_app.app_context():
         db = get_db()
         count = db.execute('SELECT COUNT(id) FROM post').fetchone()[0]
         assert count == 2
 
 
-def test_update(client, auth, app):
+def test_update(test_client, auth, test_app):
     '''Test updating a blog post.'''
 
     auth.login()
 
-    assert client.get('/1/update').status_code == 200
+    assert test_client.get('/1/update').status_code == 200
 
-    client.post('/1/update', data={'title': 'updated', 'body': ''})
+    test_client.post('/1/update', data={'title': 'updated', 'body': ''})
 
-    with app.app_context():
+    with test_app.app_context():
         db = get_db()
         post = db.execute('SELECT * FROM post WHERE id = 1').fetchone()
         assert post['title'] == 'updated'
@@ -98,22 +98,22 @@ def test_update(client, auth, app):
     '/create',
     '/1/update',
 ))
-def test_create_update_validate(client, auth, path):
+def test_create_update_validate(test_client, auth, path):
     '''Test validation for creating and updating posts.'''
 
     auth.login()
-    response = client.post(path, data={'title': '', 'body': ''})
+    response = test_client.post(path, data={'title': '', 'body': ''})
     assert b'Title is required.' in response.data
 
 
-def test_delete(client, auth, app):
+def test_delete(test_client, auth, test_app):
     '''Test deleting a blog post.'''
 
     auth.login()
-    response = client.post('/1/delete')
+    response = test_client.post('/1/delete')
     assert response.headers["Location"] == "/"
 
-    with app.app_context():
+    with test_app.app_context():
         db = get_db()
         post = db.execute('SELECT * FROM post WHERE id = 1').fetchone()
         assert post is None

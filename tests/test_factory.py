@@ -11,8 +11,8 @@ def test_config():
     assert create_app({'TESTING': True}).testing
 
 
-def test_hello(client):
+def test_hello(test_client):
     '''Test the /hello route.'''
 
-    response = client.get('/hello')
+    response = test_client.get('/hello')
     assert response.data == b'Hello, World!'

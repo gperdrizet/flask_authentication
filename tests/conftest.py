@@ -41,6 +41,6 @@ def client(test_app):
 
 @pytest.fixture
 def runner(test_app):
-    '''A test runner for the app's Click commands.'''
+    '''A test runner for the apps Click commands.'''
 
     return test_app.test_cli_runner()

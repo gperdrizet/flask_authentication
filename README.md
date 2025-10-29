@@ -1,2 +1,3 @@
-# flask_authentication
-Simple demonstration of user registration and login using Flask.
+# Flask authentication
+
+See the [tutorial](https://flask.palletsprojects.com/en/stable/tutorial) from the Flask documentation.

@@ -1,9 +1,10 @@
+// Container definition for a Python 3.12 development environment
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	// Container definition for a Python 3.12 development environment
+	// Container image
 	"name": "Python 3.12",
-	"image": "mcr.microsoft.com/devcontainers/python:0-3.12",
+	"image": "mcr.microsoft.com/devcontainers/python:3.12",
 
 	// Custom configuration options
 	"customizations": {
@@ -11,8 +12,7 @@
 
 		// Use 'settings' to set default VS code values on container create
 		"settings": {
-			"jupyter.kernels.excludePythonEnvironments": ["/usr/bin/python3"],
-			"remote.autoForwardPorts": false,
+			"remote.autoForwardPorts": true,
 			"remote.restoreForwardedPorts": false
 		},
 
@@ -20,7 +20,6 @@
 		"extensions": [
 		  "-dbaeumer.vscode-eslint",
 		  "ms-python.python",
-		  "ms-toolsai.jupyter",
           "qwtel.sqlite-viewer",
 		  "streetsidesoftware.code-spell-checker",
 		  "github.copilot",
@@ -33,7 +32,7 @@
 	"onCreateCommand": "sudo apt update && sudo apt upgrade -y && pip3 install --upgrade pip && pip3 install --user -r requirements.txt",
 
 	// Use 'postCreateCommand' to run commands once after the container is created
-	//"postCreateCommand": "",
+	"postCreateCommand": "flask --app app init-db",
 
 	// Use 'postAttachCommand' to run commands each time a user connects to the container
 	"postAttachCommand": "flask --app app run --debug"

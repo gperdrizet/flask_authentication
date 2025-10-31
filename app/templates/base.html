@@ -1,7 +1,15 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Demo App</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+<html>
+<head>
+  <title>{% block title %}{% endblock %} - Demo App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <script>
+    /*to prevent Firefox FOUC, this must be here*/
+    let FF_FOUC_FIX;
+  </script>
+</head>
+<body>
 <nav>
   <h1>Demo App</h1>
   <ul>
@@ -23,3 +31,5 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
+</body>
+</html>

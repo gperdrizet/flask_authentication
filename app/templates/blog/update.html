@@ -11,10 +11,11 @@
       value="{{ request.form['title'] or post['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
-    <input type="submit" value="Save">
-  </form>
-  <hr>
-  <form action="{{ url_for('blog.delete', post_id=post['id']) }}" method="post">
-    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+    <div style="display: flex; gap: 1em;">
+      <input type="submit" value="Save">
+      <form action="{{ url_for('blog.delete', post_id=post['id']) }}" method="post" style="margin: 0;">
+        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+      </form>
+    </div>
   </form>
 {% endblock %}
